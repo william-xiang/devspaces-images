@@ -80,7 +80,7 @@ if [[ -z "${CSV_VERSION_PREV}" ]]; then
     
     chmod +x /tmp/containerExtract.sh
     /tmp/containerExtract.sh registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator-metadata:latest
-    CSV_VERSION_PREV="$(yq eval '.spec.version' /tmp/registry.redhat.io-codeready-workspaces-crw-2-rhel8-operator-metadata-latest-*/manifests/codeready-workspaces.csv.yaml)"
+    CSV_VERSION_PREV="$(yq -r '.spec.version' /tmp/registry.redhat.io-codeready-workspaces-crw-2-rhel8-operator-metadata-latest-*/manifests/codeready-workspaces.csv.yaml)"
 
     rm -fr /tmp/registry.redhat.io-codeready-workspaces-crw-2-rhel8-operator-metadata-latest-*
     rm -fr /tmp/containerExtract.sh
