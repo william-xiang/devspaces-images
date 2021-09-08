@@ -21,7 +21,7 @@ CRW_VERSION=${CSV_VERSION%.*} # tag 2.y
 UPSTM_NAME="operator"
 MIDSTM_NAME="operator-metadata"
 
-CSV_VERSION_PREV="2.10.1"
+CSV_VERSION_PREV=""
 
 usage () {
     echo "
@@ -52,23 +52,41 @@ if [[ "${CSV_VERSION}" == "2.y.0" ]]; then usage; fi
 # from https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/crw-2-rhel-8/dependencies/VERSION.json
 # shellcheck disable=SC2086
 if [[ -z "${CSV_VERSION_PREV}" ]]; then
-    MIDSTM_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "crw-2-rhel-8")
-    if [[ ${MIDSTM_BRANCH} != "crw-"*"-rhel-"* ]]; then MIDSTM_BRANCH="crw-2-rhel-8"; fi
-    versionjson="$(curl -sSLo- "https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${MIDSTM_BRANCH}/dependencies/VERSION.json")"
-    if [[ $versionjson == *"404"* ]] || [[ $versionjson == *"Not Found"* ]]; then 
-        echo "[ERROR] Could not load https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${MIDSTM_BRANCH}/dependencies/VERSION.json"
+    
+    #MIDSTM_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "crw-2-rhel-8")
+    #if [[ ${MIDSTM_BRANCH} != "crw-"*"-rhel-"* ]]; then MIDSTM_BRANCH="crw-2-rhel-8"; fi
+    #versionjson="$(curl -sSLo- "https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${MIDSTM_BRANCH}/dependencies/VERSION.json")"
+    #if [[ $versionjson == *"404"* ]] || [[ $versionjson == *"Not Found"* ]]; then 
+    #    echo "[ERROR] Could not load https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${MIDSTM_BRANCH}/dependencies/VERSION.json"
+    #    echo "[ERROR] Please use -p flag to set CSV_VERSION_PREV"
+    #    exit 1
+    #fi
+    #if [[ $MIDSTM_BRANCH == "crw-2-rhel-8" ]]; then
+    #    CRW_VERSION="$(echo "$versionjson" | jq -r '.Version')"
+    #else 
+    #    CRW_VERSION=${MIDSTM_BRANCH/crw-/}; CRW_VERSION=${CRW_VERSION//-rhel-8}
+    #fi
+    #if [[ -z "${CSV_VERSION_PREV}" ]]; then
+    #    CSV_VERSION_PREV="$(echo "$versionjson" | jq -r '.CSVs["operator-metadata"]."'${CRW_VERSION}'".CSV_VERSION_PREV')"
+    #    if [[ ${CSV_VERSION_PREV} == "null" ]]; then CSV_VERSION_PREV="main"; fi
+    #fi
+    
+    curl -sSL https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${MIDSTM_BRANCH}/product/containerExtract.sh --output /tmp/containerExtract.sh
+    if [[ $(cat /tmp/containerExtract.sh) == *"404"* ]] || [[ $(cat /tmp/containerExtract.sh) == *"Not Found"*]]; then
+        echo "[ERROR] Could not load https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${MIDSTM_BRANCH}/product/containerExtract.sh"
         echo "[ERROR] Please use -p flag to set CSV_VERSION_PREV"
         exit 1
     fi
-    if [[ $MIDSTM_BRANCH == "crw-2-rhel-8" ]]; then
-        CRW_VERSION="$(echo "$versionjson" | jq -r '.Version')"
-    else 
-        CRW_VERSION=${MIDSTM_BRANCH/crw-/}; CRW_VERSION=${CRW_VERSION//-rhel-8}
-    fi
-    if [[ -z "${CSV_VERSION_PREV}" ]]; then
-        CSV_VERSION_PREV="$(echo "$versionjson" | jq -r '.CSVs["operator-metadata"]."'${CRW_VERSION}'".CSV_VERSION_PREV')"
-        if [[ ${CSV_VERSION_PREV} == "null" ]]; then CSV_VERSION_PREV="main"; fi
-    fi
+    
+    chmod +x /tmp/containerExtract.sh
+    ./tmp/containerExtract.sh registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator-metadata:latest
+    CSV_VERSION_PREV="$(yq eval '.spec.version' /tmp/registry.redhat.io-codeready-workspaces-crw-2-rhel8-operator-metadata-latest-*/manifests/codeready-workspaces.csv.yaml)"
+
+    rm -fr /tmp/registry.redhat.io-codeready-workspaces-crw-2-rhel8-operator-metadata-latest-*
+    rm -fr /tmp/containerExtract.sh
+    
+    if [[ ${CSV_VERSION_PREV} == "null" ]]; then CSV_VERSION_PREV="main"; fi
+
 fi
 echo "[INFO] For ${CRW_VERSION} / ${MIDSTM_BRANCH}:"
 echo "[INFO]   CSV_VERSION_PREV   = ${CSV_VERSION_PREV}"
