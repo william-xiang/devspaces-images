@@ -16,3 +16,8 @@ dnochevn@redhat.com:
     - UNSTABLE
     - FAILURE
     - SUCCESS
+
+#productization team
+sdawley@redhat.com:
+    - UNSTABLE
+    - FAILURE
