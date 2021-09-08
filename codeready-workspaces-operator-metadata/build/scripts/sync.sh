@@ -73,7 +73,7 @@ if [[ -z "${CSV_VERSION_PREV}" ]]; then
         CSV_VERSION_PREV="$(echo "$configjson" | jq -r '.CSVs["operator-metadata"]."'${CRW_VERSION}'".CSV_VERSION_PREV')"
         
         #check
-        CHECK="$(skopeo inspect docker://registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator-metadata:${CSV_VERSION_PREV} --raw)"
+        CHECK="$(skopeo inspect docker://registry.redhat.io/codeready-workspaces/crw-2-rhel8-operator-metadata:${CSV_VERSION_PREV} --raw 2>&1)"
         if [[ ${CHECK} == *"404"* ]] || [[ ${CHECK} == *"Not Found"* ]]; then
             #get from latest
             curl -sSL https://raw.githubusercontent.com/redhat-developer/codeready-workspaces/${MIDSTM_BRANCH}/product/containerExtract.sh --output /tmp/containerExtract.sh
