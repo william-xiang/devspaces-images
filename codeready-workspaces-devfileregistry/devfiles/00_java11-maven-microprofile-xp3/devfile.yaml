@@ -22,7 +22,6 @@ components:
   -
     type: dockerimage
     alias: maven
-    # alternative image is jboss-eap-7/eap-xp3-openj9-11-openshift-rhel8:3.0-8
     image: registry.redhat.io/jboss-eap-7/eap-xp3-openjdk11-openshift-rhel8:3.0-9
     env:
       - name: MAVEN_OPTS

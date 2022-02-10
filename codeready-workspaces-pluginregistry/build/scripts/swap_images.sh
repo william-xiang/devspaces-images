@@ -31,12 +31,4 @@ else
     cheYamls=$("$SCRIPT_DIR"/list_che_yaml.sh "$YAML_ROOT")
 fi
 
-# shellcheck disable=SC2086
-if [[ "$arch" != "x86_64" ]] || [[ $FORCE_SWAP -eq 1 ]]; then
-    echo -n "[INFO] swap openjdk for openj9 images on $arch"
-    if [[ $FORCE_SWAP -eq 1 ]]; then echo -n " (forced)"; fi
-    echo
-    sed -E -i 's|udi-rhel8|udi-openj9-rhel8|g' $cheYamls
-else
-    echo "[INFO] nothing to do on $arch; only swap openjdk for openj9 images on s390x and ppc64le arches"
-fi
+
