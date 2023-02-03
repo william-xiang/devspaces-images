@@ -6,7 +6,7 @@
 // Complete list of directories where yarn should be executed to install node modules
 exports.dirs = [
 	'',
-	'build',
+// 	'build',
 	'extensions',
 	'extensions/che-api',
 	'extensions/che-commands',
