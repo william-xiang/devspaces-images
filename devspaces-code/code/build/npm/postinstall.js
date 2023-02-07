@@ -25,6 +25,7 @@ function yarnInstall(location, opts) {
 		args.push('--ignore-engines');
 		delete opts.ignoreEngines;
 	}
+	args.push('--verbose');
 
 	console.log(`Installing dependencies in ${location}...`);
 	console.log(`$ yarn ${args.join(' ')}`);
